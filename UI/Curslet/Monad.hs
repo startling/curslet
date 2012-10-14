@@ -56,6 +56,10 @@ window a b = Curslet . const $ do
   keypad w
   return w
 
+-- | Run some Curslet inside some other window.
+inside :: Window -> Curslet a -> Curslet a
+inside w = local (\x -> x { screen = w }) 
+
 -- | Delete a window.
 delete :: Window -> Curslet ()
 delete = Curslet . const . delwin
