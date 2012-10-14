@@ -49,7 +49,7 @@ runCurslet c = do
 -- | Get a new window.
 window :: (Integral a, Integral b)
   => (a, a) -- ^ the height and width of the new window.
-  -> (b, b) -- ^ x and y position of the new window.
+  -> (b, b) -- ^ y and x position of the new window.
   -> Curslet Window
 window a b = Curslet . const $ do
   w <- newwin a b
