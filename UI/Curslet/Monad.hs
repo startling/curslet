@@ -63,3 +63,7 @@ inside w = local (\x -> x { screen = w })
 -- | Delete a window.
 delete :: Window -> Curslet ()
 delete = Curslet . const . delwin
+
+-- TODO: getch, keys and widechars
+-- TODO: addch and widechars
+-- TODO: colors and attributes (stick colors in Internals)
