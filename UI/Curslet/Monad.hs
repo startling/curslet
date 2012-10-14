@@ -35,15 +35,15 @@ instance MonadReader Internals Curslet where
 -- | Run a Curslet monad in IO.
 runCurslet :: Curslet n -> IO n
 runCurslet c = do
-  -- Turn on raw mode, don't echo.
-  c_raw >> c_noecho
   -- Get the screen.
   s <- initscr
+  -- Turn on raw mode, don't echo.
+  c_raw >> c_noecho
   -- Set keypad on it.
   keypad s
   r <- io c (Internals s)
-  -- End the windows, turn on echo and raw.
-  c_endwin >> c_echo >> c_noraw
+  -- End the windows, turn on echo and noraw.
+  c_echo >> c_noraw >> c_endwin
   return r
 
 -- | Get a new window.
