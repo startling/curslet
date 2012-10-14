@@ -48,13 +48,16 @@ foreign import ccall "ncurses.h nodelay"
 foreign import ccall "ncurses.h keypad"
   c_keypad :: WindowPtr -> CInt -> IO CInt
 
-keypad :: Window -> Int -> IO ()
-keypad w n = c_keypad (ptr w) (fromIntegral n) >> return ()
+keypad :: Window -> IO ()
+keypad w = c_keypad (ptr w) 1 >> return ()
+
+nokeypad :: Window -> IO ()
+nokeypad w = c_keypad (ptr w) 0 >> return ()
 
 foreign import ccall "ncurses.h newwin"
   c_newwin :: CInt -> CInt -> CInt -> CInt -> IO WindowPtr
 
-newwin :: (Integral a) => (a, a) -> (a, a) -> IO Window
+newwin :: (Integral a, Integral b) => (a, a) -> (b, b) -> IO Window
 newwin (h, w) (x, y) = fmap Window $ c_newwin (fromIntegral h)
   (fromIntegral w) (fromIntegral x) (fromIntegral y)
 
