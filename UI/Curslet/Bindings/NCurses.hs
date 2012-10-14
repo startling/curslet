@@ -82,9 +82,15 @@ wnoutrefresh = c_wnoutrefresh . ptr
 foreign import ccall "ncurses.h doupdate"
   c_doupdate :: IO CInt
 
+-- TODO: use wadd_wch instead.
 foreign import ccall "ncurses.h waddch"
   c_waddch :: WindowPtr -> CChar -> IO CInt
 
 waddch :: Window -> Char -> IO ()
 waddch w c = c_waddch (ptr w) (fromIntegral . ord $ c) >> return ()
 
+foreign import ccall "ncurses.h wmove"
+  c_wmove :: WindowPtr -> CInt -> CInt -> IO CInt
+
+wmove :: (Integral a) => Window -> (a, a) -> IO CInt
+wmove w (r, c) = c_wmove (ptr w) (fromIntegral r) (fromIntegral c)
