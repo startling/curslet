@@ -71,6 +71,7 @@ foreign import ccall "ncurses.h wgetch"
   c_wgetch :: WindowPtr -> IO CInt
 
 -- TODO: higher-level key interface
+-- TODO: get a wide char instead.
 wgetch :: Window -> IO CInt
 wgetch = c_wgetch . ptr
 
@@ -94,3 +95,6 @@ foreign import ccall "ncurses.h wmove"
 
 wmove :: (Integral a) => Window -> (a, a) -> IO CInt
 wmove w (r, c) = c_wmove (ptr w) (fromIntegral r) (fromIntegral c)
+
+-- TODO: getyx
+-- TODO: getmaxyx
