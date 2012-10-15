@@ -97,9 +97,10 @@ delete w = changed %= S.delete w >> curslet (const . delwin $ w)
 position :: Curslet (Integer, Integer)
 position = curslet getyx
 
+-- TODO: does need to mark the window as modified?
 -- | Move the cursor.
 move :: (Integer, Integer) -> Curslet ()
-move c = curslet_ $ flip wmove c
+move c = change >> curslet_ (flip wmove c)
 
 -- | Get a character.
 -- TODO: high-level-ish key interface.
@@ -107,7 +108,7 @@ getch = curslet wget_wch
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
-addch c = curslet_ $ wadd_wch c . ptr
+addch c = change >> curslet_ (wadd_wch c . ptr)
 
 -- | Put a string at the cursor position.
 put :: String -> Curslet ()
