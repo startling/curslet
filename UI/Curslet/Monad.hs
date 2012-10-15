@@ -64,6 +64,10 @@ inside w = local (\x -> x { screen = w })
 delete :: Window -> Curslet ()
 delete = Curslet . const . delwin
 
+-- | Current position of the cursor.
+position :: Curslet (Integer, Integer)
+position = Curslet $ getyx . screen
+
 -- | Move the cursor.
 move :: (Integer, Integer) -> Curslet ()
 move c = Curslet (flip wmove c . screen ) >> return ()
