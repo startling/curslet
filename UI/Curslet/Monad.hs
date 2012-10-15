@@ -65,7 +65,6 @@ delete :: Window -> Curslet ()
 delete = Curslet . const . delwin
 
 -- | Get a character.
--- TODO: this SIGBUSes
 -- TODO: high-level-ish key interface.
 getch = Curslet $ wget_wch . ptr . screen
 
