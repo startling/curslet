@@ -76,7 +76,6 @@ getch = Curslet $ wget_wch . ptr . screen
 addch :: Char -> Curslet ()
 addch c = Curslet (wadd_wch c . ptr . screen) >> return ()
 
--- TODO: getch, keys and widechars
--- TODO: addch and widechars
+-- TODO: getch keys
 -- TODO: colors and attributes (stick colors in Internals)
 
