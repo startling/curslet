@@ -27,7 +27,7 @@ instance Storable Cchar_t where
   alignment _ = #{alignment cchar_t}
   peek p = Cchar_t
     -- Get an AttrT.
-    <$> (#{peek cchar_t, attr} p >>= peek)
+    <$> (AttrT <$> #{peek cchar_t, attr} p)
     -- Get a list of #{const CCHARW_MAX} CWchars.
     <*> peekArray #{const CCHARW_MAX} (#{ptr cchar_t, chars} p)
   poke p c = do
