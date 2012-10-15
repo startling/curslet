@@ -84,6 +84,17 @@ addch c = Curslet (wadd_wch c . ptr . screen) >> return ()
 put :: String -> Curslet ()
 put = mapM_ addch
 
+-- | Run some action inside a new window; delete it afterwards.
+spawn
+  :: (Integer, Integer) -- ^ The height and width of the window.
+  -> (Integer, Integer) -- ^ The y and x positions of the window.
+  -> Curslet b -> Curslet b
+spawn n b a = do
+  w <- window n b
+  r <- inside w a
+  delete w
+  return r
+
 -- TODO: getch keys
 -- TODO: colors and attributes (stick colors in Internals)
 
