@@ -109,11 +109,14 @@ delete w = changed %= S.delete w >> curslet (const . delwin $ w)
 position :: Curslet (Integer, Integer)
 position = curslet getyx
 
+-- | Get the height and width of the current window.
+size :: Curslet (Integer, Integer)
+size = over both (+ 1) <$> curslet getmaxyx
+
 -- TODO: does need to mark the window as modified?
 -- | Move the cursor.
 move :: (Integer, Integer) -> Curslet ()
 move c = change >> curslet_ (flip wmove c)
-
 
 -- | Get a character.
 -- TODO: higher-level key interface.
