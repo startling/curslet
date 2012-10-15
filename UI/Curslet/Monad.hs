@@ -6,7 +6,7 @@ import Control.Monad (ap, mapM_)
 import Control.Applicative ((<$>), Applicative(..))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
-import Control.Monad.State (MonadState(..))
+import Control.Monad.State (MonadState(..), modify)
 -- containers:
 import Data.Set (Set)
 import qualified Data.Set as S
@@ -65,6 +65,11 @@ runCurslet c = do
   -- End the windows, turn on echo and noraw.
   c_echo >> c_noraw >> c_endwin
   return r
+
+-- | Tag this window as modified for the next refresh.
+change :: Curslet ()
+change = screen <$> ask >>= \w -> modify 
+  $ \m -> m { changed = S.insert w (changed m) }
 
 -- | Get a new window.
 window
