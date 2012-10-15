@@ -92,26 +92,26 @@ wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 foreign import ccall "ncurses.h wget_wch"
   c_wget_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
-wget_wch :: WindowPtr -> IO (Int, Cchar_t)
-wget_wch w = alloca $ \p -> do 
+wget_wch :: Window -> IO (Int, Cchar_t)
+wget_wch (Window w) = alloca $ \p -> do 
   i <- c_wget_wch w p
   c <- peek p
   return (fromIntegral i, c) 
 
-getyx :: (Num t) => WindowPtr -> IO (t, t)
-getyx w = do
+getyx :: (Num t) => Window -> IO (t, t)
+getyx (Window w) = do
   y <- c_cur_y w
   x <- c_cur_x w
   return (fromIntegral y, fromIntegral x)
 
-getmaxyx :: (Num t) => WindowPtr -> IO (t, t)
-getmaxyx w = do
+getmaxyx :: (Num t) => Window -> IO (t, t)
+getmaxyx (Window w) = do
   y <- c_max_y w
   x <- c_max_x w
   return (fromIntegral y, fromIntegral x)
 
-getbegyx :: (Num t) => WindowPtr -> IO (t, t)
-getbegyx w = do
+getbegyx :: (Num t) => Window -> IO (t, t)
+getbegyx (Window w) = do
   y <- c_beg_y w
   x <- c_beg_x w
   return (fromIntegral y, fromIntegral x)
