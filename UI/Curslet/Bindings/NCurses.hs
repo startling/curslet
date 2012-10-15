@@ -95,13 +95,13 @@ wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 
 -- TODO: higher-level key interface
 foreign import ccall "ncurses.h wget_wch"
-  c_wget_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
+  c_wget_wch :: WindowPtr -> Ptr CInt -> IO CInt
 
-wget_wch :: Window -> IO (Int, Cchar_t)
+wget_wch :: Num t => Window -> IO (t, t)
 wget_wch (Window w) = alloca $ \p -> do 
   i <- c_wget_wch w p
   c <- peek p
-  return (fromIntegral i, c) 
+  return (fromIntegral i, fromIntegral c) 
 
 getyx :: (Num t) => Window -> IO (t, t)
 getyx (Window w) = do
