@@ -70,7 +70,7 @@ move c = Curslet (flip wmove c . screen ) >> return ()
 
 -- | Get a character.
 -- TODO: high-level-ish key interface.
-getch = Curslet $ wget_wch . ptr . screen
+getch = Curslet $ wget_wch . screen
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
