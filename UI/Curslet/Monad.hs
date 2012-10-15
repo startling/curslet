@@ -55,9 +55,11 @@ instance MonadState Mutable Curslet where
   put s = Curslet $ \i m -> return (s, ())
 
 -- | Make some Window -> IO m function into a Curslet m.
+curslet :: (Window -> IO m) -> Curslet m
 curslet f = Curslet $ \i m -> (,) m <$> (f . view screen $ i)
 
 -- | Make some Window -> IO m function into a Curslet ()
+curslet_ :: (Window -> IO a) -> Curslet ()
 curslet_ f = curslet f >> return ()
 
 -- | Run a Curslet monad in IO.
@@ -137,4 +139,3 @@ spawn n b a = do
 
 -- TODO: getch keys
 -- TODO: colors and attributes (stick colors in Internals)
-
