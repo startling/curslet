@@ -1,5 +1,6 @@
 {-# Language MultiParamTypeClasses #-}
 {-# Language FlexibleInstances #-}
+{-# Language TemplateHaskell #-}
 module UI.Curslet.Monad where
 -- base:
 import Control.Monad (ap, mapM_)
@@ -10,16 +11,20 @@ import Control.Monad.State (MonadState(..), modify)
 -- containers:
 import Data.Set (Set)
 import qualified Data.Set as S
+-- lens:
+import Control.Lens
 -- curslet:
 import UI.Curslet.Bindings.NCurses
 
 -- | The immutable state each 'Curslet' can query.
 data Internals = Internals
-  { screen :: Window }
+  { _screen :: Window }
+makeLenses ''Internals
 
 -- | The mutable state each 'Curslet' can query and modify.
 data Mutable = Mutable
-  { changed :: Set Window }
+  { _changed :: Set Window }
+makeLenses ''Mutable
 
 -- | A little reader-ish wrapper around IO.
 newtype Curslet m = Curslet 
@@ -47,7 +52,7 @@ instance MonadState Mutable Curslet where
   put s = Curslet $ \i m -> return (s, ())
 
 -- | Make some Window -> IO m function into a Curslet m.
-curslet f = Curslet $ \i m -> (,) m <$> (f . screen $ i)
+curslet f = Curslet $ \i m -> (,) m <$> (f . view screen $ i)
 
 -- | Make some Window -> IO m function into a Curslet ()
 curslet_ f = curslet f >> return ()
@@ -68,8 +73,7 @@ runCurslet c = do
 
 -- | Tag this window as modified for the next refresh.
 change :: Curslet ()
-change = screen <$> ask >>= \w -> modify 
-  $ \m -> m { changed = S.insert w (changed m) }
+change = query screen >>= (%=) changed . S.insert
 
 -- | Get a new window.
 window
@@ -83,11 +87,11 @@ window a b = Curslet $ \i m -> do
 
 -- | Run some Curslet inside some other window.
 inside :: Window -> Curslet a -> Curslet a
-inside w = local (\x -> x { screen = w }) 
+inside w = local (screen .~ w)
 
 -- | Delete a window.
 delete :: Window -> Curslet ()
-delete = curslet . const . delwin
+delete w = changed %= S.delete w >> curslet (const . delwin $ w)
 
 -- | Current position of the cursor.
 position :: Curslet (Integer, Integer)
