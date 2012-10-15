@@ -97,11 +97,16 @@ wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 foreign import ccall "ncurses.h wget_wch"
   c_wget_wch :: WindowPtr -> Ptr CInt -> IO CInt
 
-wget_wch :: Num t => Window -> IO (t, t)
+wget_wch :: Num a => Window -> IO (Either a Char)
 wget_wch (Window w) = alloca $ \p -> do 
   i <- c_wget_wch w p
   c <- peek p
-  return (fromIntegral i, fromIntegral c) 
+  return $ case i of
+    -- OK
+    0 -> Right . chr . fromIntegral $ c
+    -- KEY_CODE_YES
+    400 -> Left . fromIntegral $ c
+    -- ERR (-1)
 
 getyx :: (Num t) => Window -> IO (t, t)
 getyx (Window w) = do
