@@ -46,20 +46,26 @@ data Window_t
 type WindowPtr = Ptr Window_t
 newtype Window = Window { ptr :: WindowPtr }
 
+-- | Read the cury field of a window.
 c_cur_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_cur_y = #{peek struct _win_st, _cury}
 
+-- | Read the curx field of a window.
 c_cur_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_cur_x = #{peek struct _win_st, _curx}
 
+-- | Read the maxy field of a window.
 c_max_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_max_y =  #{peek struct _win_st, _maxy}
 
+-- | Read the maxx field of a window.
 c_max_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_max_x =  #{peek struct _win_st, _maxx}
 
+-- | Read the begy field of a window.
 c_beg_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_beg_y =  #{peek struct _win_st, _begy}
 
+-- | Read the begx field of a window.
 c_beg_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_beg_x =  #{peek struct _win_st, _begx}
