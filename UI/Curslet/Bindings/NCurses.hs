@@ -86,8 +86,11 @@ foreign import ccall "ncurses.h doupdate"
 foreign import ccall "ncurses.h wadd_wch"
   c_wadd_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
-wadd_wch :: WindowPtr -> Cchar_t -> IO CInt
-wadd_wch w c = alloca $ \p -> poke p c >> c_wadd_wch w p
+fromChar :: Char -> Cchar_t
+fromChar c = Cchar_t (AttrT 0) [fromIntegral . ord $ c]
+
+wadd_wch :: Char -> WindowPtr -> IO CInt
+wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 
 -- TODO: higher-level key interface
 foreign import ccall "ncurses.h wget_wch"
