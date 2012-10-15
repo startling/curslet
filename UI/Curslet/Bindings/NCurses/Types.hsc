@@ -1,4 +1,5 @@
 {-# Language GeneralizedNewtypeDeriving #-}
+#define NCURSES_OPAQUE (0)
 #define _XOPEN_SOURCE_EXTENDED
 -- alignment operation, stolen from:
 -- http://www.haskell.org/haskellwiki/FFICookBook#Working_with_structs
@@ -8,6 +9,7 @@ module UI.Curslet.Bindings.NCurses.Types where
 -- base:
 import Foreign
 import Foreign.C.Types
+import Data.Int (Int16)
 import Control.Applicative ((<$>), (<*>))
 
 -- | A wrapper type for ncurses' attr_t. Probably a numeric type;
@@ -39,3 +41,25 @@ instance Storable Cchar_t where
       then fail "Cchar_t contains too many CWchars."
       else pokeArray (#{ptr cchar_t, chars} p) $ chars c
     return ()
+
+data Window_t
+type WindowPtr = Ptr Window_t
+newtype Window = Window { ptr :: WindowPtr }
+
+c_cur_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
+c_cur_y = #{peek struct _win_st, _cury}
+
+c_cur_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
+c_cur_x = #{peek struct _win_st, _curx}
+
+c_max_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
+c_max_y =  #{peek struct _win_st, _maxy}
+
+c_max_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
+c_max_x =  #{peek struct _win_st, _maxx}
+
+c_beg_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
+c_beg_y =  #{peek struct _win_st, _begy}
+
+c_beg_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
+c_beg_x =  #{peek struct _win_st, _begx}
