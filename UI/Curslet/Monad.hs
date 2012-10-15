@@ -114,9 +114,11 @@ position = curslet getyx
 move :: (Integer, Integer) -> Curslet ()
 move c = change >> curslet_ (flip wmove c)
 
+
 -- | Get a character.
--- TODO: high-level-ish key interface.
-getch = curslet wget_wch
+-- TODO: higher-level key interface.
+getch :: Curslet (Maybe Char)
+getch = either (const Nothing) (Just) <$> curslet wget_wch
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
