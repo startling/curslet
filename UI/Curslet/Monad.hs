@@ -64,6 +64,10 @@ inside w = local (\x -> x { screen = w })
 delete :: Window -> Curslet ()
 delete = Curslet . const . delwin
 
+-- | Move the cursor.
+move :: (Integer, Integer) -> Curslet ()
+move c = Curslet (flip wmove c . screen ) >> return ()
+
 -- | Get a character.
 -- TODO: high-level-ish key interface.
 getch = Curslet $ wget_wch . ptr . screen
