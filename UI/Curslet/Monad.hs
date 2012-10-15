@@ -2,7 +2,7 @@
 {-# Language FlexibleInstances #-}
 module UI.Curslet.Monad where
 -- base:
-import Control.Monad (ap)
+import Control.Monad (ap, mapM_)
 import Control.Applicative ((<$>), Applicative(..))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
@@ -47,9 +47,9 @@ runCurslet c = do
   return r
 
 -- | Get a new window.
-window :: (Integral a, Integral b)
-  => (a, a) -- ^ the height and width of the new window.
-  -> (b, b) -- ^ y and x position of the new window.
+window
+  :: (Integer, Integer) -- ^ the height and width of the new window.
+  -> (Integer, Integer) -- ^ y and x position of the new window.
   -> Curslet Window
 window a b = Curslet . const $ do
   w <- newwin a b
@@ -79,6 +79,10 @@ getch = Curslet $ wget_wch . screen
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
 addch c = Curslet (wadd_wch c . ptr . screen) >> return ()
+
+-- | Put a string at the cursor position.
+put :: String -> Curslet ()
+put = mapM_ addch
 
 -- TODO: getch keys
 -- TODO: colors and attributes (stick colors in Internals)
