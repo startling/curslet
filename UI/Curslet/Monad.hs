@@ -64,6 +64,15 @@ inside w = local (\x -> x { screen = w })
 delete :: Window -> Curslet ()
 delete = Curslet . const . delwin
 
+-- | Get a character.
+-- TODO: this SIGBUSes
+-- TODO: high-level-ish key interface.
+getch = Curslet $ wget_wch . ptr . screen
+
+-- | Put a character at the cursor position.
+addch :: Char -> Curslet ()
+addch c = Curslet (wadd_wch c . ptr . screen) >> return ()
+
 -- TODO: getch, keys and widechars
 -- TODO: addch and widechars
 -- TODO: colors and attributes (stick colors in Internals)
