@@ -3,7 +3,9 @@
 {-# Language TemplateHaskell #-}
 module UI.Curslet.Monad where
 -- base:
-import Control.Monad (ap, mapM_)
+import Prelude hiding (mapM_)
+import Data.Foldable (mapM_)
+import Control.Monad (ap)
 import Control.Applicative ((<$>), Applicative(..))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
@@ -71,9 +73,14 @@ runCurslet c = do
   c_echo >> c_noraw >> c_endwin
   return r
 
--- | Tag this window as modified for the next refresh.
+-- | Mark this window as modified for the next refresh.
 change :: Curslet ()
 change = query screen >>= (%=) changed . S.insert
+
+-- | Update all the modified windows, refresh.
+refresh :: Curslet ()
+refresh = use changed >>= mapM_ (flip inside . curslet_ $ wnoutrefresh)
+  >> curslet_ (const c_doupdate) >> changed .= S.empty
 
 -- | Get a new window.
 window
