@@ -23,6 +23,7 @@ data Internals = Internals
   { _screen :: Window }
 makeLenses ''Internals
 
+-- TODO: should this be written instead?
 -- | The mutable state each 'Curslet' can query and modify.
 data Mutable = Mutable
   { _changed :: Set Window }
@@ -79,8 +80,10 @@ change = query screen >>= (%=) changed . S.insert
 
 -- | Update all the modified windows, refresh.
 refresh :: Curslet ()
-refresh = use changed >>= mapM_ (flip inside . curslet_ $ wnoutrefresh)
-  >> curslet_ (const c_doupdate) >> changed .= S.empty
+refresh = use changed >>= \x -> if S.null x
+  then mapM_ (flip inside . curslet_ $ wnoutrefresh) x
+    >> curslet_ (const c_doupdate) >> changed .= S.empty
+  else return ()
 
 -- | Get a new window.
 window
