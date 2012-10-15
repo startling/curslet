@@ -1,9 +1,9 @@
 {-# Language ForeignFunctionInterface #-}
 module UI.Curslet.Bindings.NCurses where
 -- base:
-import Data.Char (ord)
+import Data.Char (ord, chr)
 import Foreign (Ptr)
-import Foreign.C.Types (CInt(..), CChar(..))
+import Foreign.C.Types (CInt(..), CChar(..), CWchar)
 
 data Window_t
 type WindowPtr = Ptr Window_t
@@ -67,13 +67,11 @@ foreign import ccall "ncurses.h delwin"
 delwin :: Window -> IO ()
 delwin = c_delwin . ptr
 
-foreign import ccall "ncurses.h wgetch"
-  c_wgetch :: WindowPtr -> IO CInt
+foreign import ccall "ncurses.h wmove"
+  c_wmove :: WindowPtr -> CInt -> CInt -> IO CInt
 
--- TODO: higher-level key interface
--- TODO: get a wide char instead.
-wgetch :: Window -> IO CInt
-wgetch = c_wgetch . ptr
+wmove :: (Integral a) => Window -> (a, a) -> IO CInt
+wmove w (r, c) = c_wmove (ptr w) (fromIntegral r) (fromIntegral c)
 
 foreign import ccall "ncurses.h wnoutrefresh"
   c_wnoutrefresh :: WindowPtr -> IO CInt
@@ -83,18 +81,14 @@ wnoutrefresh = c_wnoutrefresh . ptr
 foreign import ccall "ncurses.h doupdate"
   c_doupdate :: IO CInt
 
--- TODO: use wadd_wch instead.
-foreign import ccall "ncurses.h waddch"
-  c_waddch :: WindowPtr -> CChar -> IO CInt
+data Cchar_t
 
-waddch :: Window -> Char -> IO ()
-waddch w c = c_waddch (ptr w) (fromIntegral . ord $ c) >> return ()
+foreign import ccall "ncurses.h wadd_wch"
+  c_wadd_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
-foreign import ccall "ncurses.h wmove"
-  c_wmove :: WindowPtr -> CInt -> CInt -> IO CInt
-
-wmove :: (Integral a) => Window -> (a, a) -> IO CInt
-wmove w (r, c) = c_wmove (ptr w) (fromIntegral r) (fromIntegral c)
+-- TODO: higher-level key interface
+foreign import ccall "ncurses.h wget_wch"
+  c_wget_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
 -- TODO: getyx
 -- TODO: getmaxyx
