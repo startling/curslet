@@ -94,6 +94,10 @@ size = curslet getmaxyx <&> \(a, b) -> (a + 1, b + 1)
 move :: (Integer, Integer) -> Curslet ()
 move c = change >> curslet_ (flip wmove c)
 
+-- | Set the border.
+border :: Char -> Char -> Curslet ()
+border c d = curslet_ (\w -> box w c d)
+
 -- | Get a character. Note that this implicitly refreshes.
 -- TODO: higher-level key interface.
 getch :: Curslet (Maybe Char)
