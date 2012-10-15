@@ -2,8 +2,10 @@
 module UI.Curslet.Bindings.NCurses where
 -- base:
 import Data.Char (ord, chr)
+import Data.Function (on)
 import Foreign (Ptr, alloca, peek, poke)
 import Foreign.C.Types (CInt(..), CChar(..), CWchar)
+import Foreign.C.String (castCharToCChar)
 -- curslet:
 import UI.Curslet.Bindings.NCurses.Types
 
@@ -75,6 +77,12 @@ foreign import ccall "ncurses.h wmove"
 
 wmove :: (Integral a) => Window -> (a, a) -> IO CInt
 wmove w (r, c) = c_wmove (ptr w) (fromIntegral r) (fromIntegral c)
+
+foreign import ccall "ncurses.h box"
+  c_box :: WindowPtr -> CChar -> CChar -> IO CInt
+
+box :: Window -> Char -> Char -> IO CInt
+box (Window w) = c_box w `on` castCharToCChar
 
 foreign import ccall "ncurses.h wnoutrefresh"
   c_wnoutrefresh :: WindowPtr -> IO CInt
