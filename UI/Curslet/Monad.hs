@@ -67,3 +67,4 @@ delete = Curslet . const . delwin
 -- TODO: getch, keys and widechars
 -- TODO: addch and widechars
 -- TODO: colors and attributes (stick colors in Internals)
+
