@@ -96,8 +96,6 @@ wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 foreign import ccall "ncurses.h wget_wch"
   c_wget_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
--- TODO: peek p here SIGBUSes no matter what I do. I've tried
--- using malloc instead, too.
 wget_wch :: WindowPtr -> IO Cchar_t
 wget_wch w = alloca $ \p -> c_wget_wch w p >> peek p
 
