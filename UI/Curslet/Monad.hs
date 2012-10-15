@@ -120,10 +120,11 @@ size = over both (+ 1) <$> curslet getmaxyx
 move :: (Integer, Integer) -> Curslet ()
 move c = change >> curslet_ (flip wmove c)
 
--- | Get a character.
+-- | Get a character. Because wget_wch implicitly calls wrefresh,
+-- this updates all the marked-for-update windows, too.
 -- TODO: higher-level key interface.
 getch :: Curslet (Maybe Char)
-getch = either (const Nothing) (Just) <$> curslet wget_wch
+getch = update >> either (const Nothing) (Just) <$> curslet wget_wch
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
