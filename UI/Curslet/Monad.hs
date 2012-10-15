@@ -6,35 +6,46 @@ import Control.Monad (ap, mapM_)
 import Control.Applicative ((<$>), Applicative(..))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
+-- containers:
+import Data.Set (Set)
+import qualified Data.Set as S
 -- curslet:
 import UI.Curslet.Bindings.NCurses
 
--- | The hidden state inside each Curslet.
+-- | The immutable state each 'Curslet' can query.
 data Internals = Internals
   { screen :: Window }
 
+-- | The mutable state each 'Curslet' can query and modify.
+data Mutable = Mutable
+  { changed :: Set Window }
+
 -- | A little reader-ish wrapper around IO.
 newtype Curslet m = Curslet 
-  { io :: Internals -> IO m }
+  { io :: Internals -> Mutable -> IO (Mutable, m) }
 
 instance Monad Curslet where
-  return = Curslet . const .  return
-  (Curslet i) >>= fn = Curslet $ \x -> i x >>= ($ x) . io . fn
+  return a = Curslet $ \i m -> return (m, a)
+  (Curslet a) >>= fn = Curslet $ \i m ->
+    a i m >>= \(n, x) -> (io . fn $ x) i n
 
 instance Functor Curslet where
-  fmap fn (Curslet i) = Curslet $ fmap (fmap fn) i
+  fmap fn (Curslet a) = Curslet $ \i m ->
+    fmap (fmap fn) (a i m)
 
 instance Applicative Curslet where
   pure = return
   (<*>) = ap
 
 instance MonadReader Internals Curslet where
-  ask = Curslet return
+  ask = Curslet $ \i m -> return (m, i)
   local fn (Curslet a) = Curslet $ \x -> a (fn x)
 
 -- | Make some Window -> IO m function into a Curslet m.
-curslet :: (Window -> IO m) -> Curslet ()
-curslet f = Curslet (f . screen) >> return ()
+curslet f = Curslet $ \i m -> (,) m <$> (f . screen $ i)
+
+-- | Make some Window -> IO m function into a Curslet ()
+curslet_ f = curslet f >> return ()
 
 -- | Run a Curslet monad in IO.
 runCurslet :: Curslet n -> IO n
@@ -45,7 +56,7 @@ runCurslet c = do
   c_raw >> c_noecho
   -- Set keypad on it.
   keypad s
-  r <- io c (Internals s)
+  (_, r) <- io c (Internals s) (Mutable S.empty)
   -- End the windows, turn on echo and noraw.
   c_echo >> c_noraw >> c_endwin
   return r
@@ -55,10 +66,10 @@ window
   :: (Integer, Integer) -- ^ the height and width of the new window.
   -> (Integer, Integer) -- ^ y and x position of the new window.
   -> Curslet Window
-window a b = Curslet . const $ do
+window a b = Curslet $ \i m -> do
   w <- newwin a b
   keypad w
-  return w
+  return (m, w)
 
 -- | Run some Curslet inside some other window.
 inside :: Window -> Curslet a -> Curslet a
@@ -70,11 +81,11 @@ delete = curslet . const . delwin
 
 -- | Current position of the cursor.
 position :: Curslet (Integer, Integer)
-position = Curslet $ getyx . screen
+position = curslet getyx
 
 -- | Move the cursor.
 move :: (Integer, Integer) -> Curslet ()
-move c = curslet $ flip wmove c
+move c = curslet_ $ flip wmove c
 
 -- | Get a character.
 -- TODO: high-level-ish key interface.
@@ -82,7 +93,7 @@ getch = curslet wget_wch
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
-addch c = curslet $ wadd_wch c . ptr
+addch c = curslet_ $ wadd_wch c . ptr
 
 -- | Put a string at the cursor position.
 put :: String -> Curslet ()
