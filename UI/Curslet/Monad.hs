@@ -1,23 +1,17 @@
 {-# Language MultiParamTypeClasses #-}
 {-# Language FlexibleInstances #-}
-{-# Language TemplateHaskell #-}
 module UI.Curslet.Monad where
 -- base:
-import Prelude hiding (mapM_)
-import Data.Foldable (mapM_)
 import Control.Monad (ap)
 import Control.Applicative ((<$>), Applicative(..))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
--- lens:
-import Control.Lens
 -- curslet:
 import UI.Curslet.Bindings.NCurses
 
 -- | The immutable state each 'Curslet' can query.
 data Internals = Internals
-  { _screen :: Window }
-makeLenses ''Internals
+  { screen :: Window }
 
 -- | A little reader-ish wrapper around IO.
 newtype Curslet m = Curslet 
@@ -40,7 +34,7 @@ instance MonadReader Internals Curslet where
 
 -- | Make some Window -> IO m function into a Curslet m.
 curslet :: (Window -> IO m) -> Curslet m
-curslet f = Curslet $ f . view screen
+curslet f = Curslet $ f . screen
 
 -- | Make some Window -> IO m function into a Curslet ()
 curslet_ :: (Window -> IO a) -> Curslet ()
@@ -80,7 +74,7 @@ window a b = Curslet . const $ do
 
 -- | Run some Curslet inside some other window.
 inside :: Window -> Curslet a -> Curslet a
-inside w = local (screen .~ w)
+inside w = local $ \x -> x { screen = w }
 
 -- | Delete a window.
 delete :: Window -> Curslet ()
@@ -92,7 +86,8 @@ position = curslet getyx
 
 -- | Get the height and width of the current window.
 size :: Curslet (Integer, Integer)
-size = over both (+ 1) <$> curslet getmaxyx
+size = curslet getmaxyx <&> \(a, b) -> (a + 1, b + 1)
+  where (<&>) = flip fmap
 
 -- TODO: does need to mark the window as modified?
 -- | Move the cursor.
