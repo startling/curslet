@@ -7,6 +7,10 @@ import Foreign.C.Types (CInt(..), CChar(..), CWchar)
 -- curslet:
 import UI.Curslet.Bindings.NCurses.Types
 
+-- | Windows just wrap a WindowPtr.
+newtype Window = Window
+  { ptr :: WindowPtr }
+
 foreign import ccall "ncurses.h initscr"
   c_initscr :: IO WindowPtr
 

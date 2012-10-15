@@ -44,7 +44,6 @@ instance Storable Cchar_t where
 
 data Window_t
 type WindowPtr = Ptr Window_t
-newtype Window = Window { ptr :: WindowPtr }
 
 -- | Read the cury field of a window.
 c_cur_y :: WindowPtr -> IO #{type NCURSES_SIZE_T}
