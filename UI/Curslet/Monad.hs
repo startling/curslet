@@ -6,6 +6,7 @@ import Control.Monad (ap, mapM_)
 import Control.Applicative ((<$>), Applicative(..))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
+import Control.Monad.State (MonadState(..))
 -- containers:
 import Data.Set (Set)
 import qualified Data.Set as S
@@ -40,6 +41,10 @@ instance Applicative Curslet where
 instance MonadReader Internals Curslet where
   ask = Curslet $ \i m -> return (m, i)
   local fn (Curslet a) = Curslet $ \x -> a (fn x)
+
+instance MonadState Mutable Curslet where
+  get = Curslet $ \i m -> return (m, m)
+  put s = Curslet $ \i m -> return (s, ())
 
 -- | Make some Window -> IO m function into a Curslet m.
 curslet f = Curslet $ \i m -> (,) m <$> (f . screen $ i)
