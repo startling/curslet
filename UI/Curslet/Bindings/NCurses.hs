@@ -98,5 +98,20 @@ wget_wch w = alloca $ \p -> do
   c <- peek p
   return (fromIntegral i, c) 
 
--- TODO: getyx
--- TODO: getmaxyx
+getyx :: (Num t) => WindowPtr -> IO (t, t)
+getyx w = do
+  y <- c_cur_y w
+  x <- c_cur_x w
+  return (fromIntegral y, fromIntegral x)
+
+getmaxyx :: (Num t) => WindowPtr -> IO (t, t)
+getmaxyx w = do
+  y <- c_max_y w
+  x <- c_max_x w
+  return (fromIntegral y, fromIntegral x)
+
+getbegyx :: (Num t) => WindowPtr -> IO (t, t)
+getbegyx w = do
+  y <- c_beg_y w
+  x <- c_beg_x w
+  return (fromIntegral y, fromIntegral x)
