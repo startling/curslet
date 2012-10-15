@@ -80,12 +80,14 @@ runCurslet c = do
 change :: Curslet ()
 change = query screen >>= (%=) changed . S.insert
 
--- | Update all the modified windows, refresh.
+-- | Update all the modified windows.
+update :: Curslet ()
+update = use changed >>= mapM_ (flip inside . curslet_ $ wnoutrefresh)
+  >> changed .= S.empty
+
+-- | Update all the modified windows and redraw them.
 refresh :: Curslet ()
-refresh = use changed >>= \x -> if S.null x
-  then mapM_ (flip inside . curslet_ $ wnoutrefresh) x
-    >> curslet_ (const c_doupdate) >> changed .= S.empty
-  else return ()
+refresh = update >> curslet_ (const c_doupdate)
 
 -- | Get a new window.
 window
