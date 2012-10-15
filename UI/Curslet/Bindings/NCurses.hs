@@ -2,8 +2,10 @@
 module UI.Curslet.Bindings.NCurses where
 -- base:
 import Data.Char (ord, chr)
-import Foreign (Ptr)
+import Foreign (Ptr, alloca, peek, poke)
 import Foreign.C.Types (CInt(..), CChar(..), CWchar)
+-- curslet:
+import UI.Curslet.Bindings.NCurses.Types
 
 data Window_t
 type WindowPtr = Ptr Window_t
@@ -81,14 +83,18 @@ wnoutrefresh = c_wnoutrefresh . ptr
 foreign import ccall "ncurses.h doupdate"
   c_doupdate :: IO CInt
 
-data Cchar_t
-
 foreign import ccall "ncurses.h wadd_wch"
   c_wadd_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
+
+wadd_wch :: WindowPtr -> Cchar_t -> IO CInt
+wadd_wch w c = alloca $ \p -> poke p c >> c_wadd_wch w p
 
 -- TODO: higher-level key interface
 foreign import ccall "ncurses.h wget_wch"
   c_wget_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
+
+wget_wch :: WindowPtr -> IO Cchar_t
+wget_wch w = alloca $ \p -> c_wget_wch w p >> peek p
 
 -- TODO: getyx
 -- TODO: getmaxyx
