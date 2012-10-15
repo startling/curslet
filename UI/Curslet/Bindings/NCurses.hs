@@ -96,8 +96,11 @@ wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 foreign import ccall "ncurses.h wget_wch"
   c_wget_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
-wget_wch :: WindowPtr -> IO Cchar_t
-wget_wch w = alloca $ \p -> c_wget_wch w p >> peek p
+wget_wch :: WindowPtr -> IO (Int, Cchar_t)
+wget_wch w = alloca $ \p -> do 
+  i <- c_wget_wch w p
+  c <- peek p
+  return (fromIntegral i, c) 
 
 -- TODO: getyx
 -- TODO: getmaxyx
