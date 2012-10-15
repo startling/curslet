@@ -32,6 +32,10 @@ instance MonadReader Internals Curslet where
   ask = Curslet return
   local fn (Curslet a) = Curslet $ \x -> a (fn x)
 
+-- | Make some Window -> IO m function into a Curslet m.
+curslet :: (Window -> IO m) -> Curslet ()
+curslet f = Curslet (f . screen) >> return ()
+
 -- | Run a Curslet monad in IO.
 runCurslet :: Curslet n -> IO n
 runCurslet c = do
@@ -62,7 +66,7 @@ inside w = local (\x -> x { screen = w })
 
 -- | Delete a window.
 delete :: Window -> Curslet ()
-delete = Curslet . const . delwin
+delete = curslet . const . delwin
 
 -- | Current position of the cursor.
 position :: Curslet (Integer, Integer)
@@ -70,15 +74,15 @@ position = Curslet $ getyx . screen
 
 -- | Move the cursor.
 move :: (Integer, Integer) -> Curslet ()
-move c = Curslet (flip wmove c . screen ) >> return ()
+move c = curslet $ flip wmove c
 
 -- | Get a character.
 -- TODO: high-level-ish key interface.
-getch = Curslet $ wget_wch . screen
+getch = curslet wget_wch
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
-addch c = Curslet (wadd_wch c . ptr . screen) >> return ()
+addch c = curslet $ wadd_wch c . ptr
 
 -- | Put a string at the cursor position.
 put :: String -> Curslet ()
