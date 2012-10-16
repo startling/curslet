@@ -90,6 +90,11 @@ fromAttribute a = case a of
   Invisible -> #{const A_INVIS}
   Alt       -> #{const A_ALTCHARSET}
 
+
+-- | Add some attributes to some Bits.
+addAttribute :: Bits b => b -> [Attribute] -> b
+addAttribute = foldr (\a b -> b .|. fromAttribute a)
+
 -- | Turn a group of attributes into some Bits.
 combine :: Bits b => [Attribute] -> b
-combine = foldr (\a b -> b .|. fromAttribute a) 0
+combine = addAttribute 0
