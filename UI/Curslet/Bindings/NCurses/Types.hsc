@@ -72,14 +72,13 @@ c_beg_x =  #{peek struct _win_st, _begx}
 
 -- | Higher-level interface for attributes.
 data Attribute
-  = Normal | Standout | Underline | Reverse | Blink
-  | Dim    | Bold     | Invisible | Protect | Alt
+  = Standout | Underline | Reverse | Blink | Dim
+  | Bold     | Invisible | Protect | Alt
   deriving (Eq, Ord, Show, Enum)
 
 -- | Turn a single attribute into some Num.
 fromAttribute :: Num a => Attribute -> a
 fromAttribute a = case a of
-  Normal    -> #{const A_NORMAL}
   Standout  -> #{const A_STANDOUT}
   Underline -> #{const A_UNDERLINE}
   Reverse   -> #{const A_REVERSE}
