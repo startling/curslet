@@ -9,6 +9,7 @@ module UI.Curslet.Bindings.NCurses.Types where
 -- base:
 import Foreign
 import Foreign.C.Types
+import Data.Bits ((.|.))
 import Data.Int (Int16)
 import Control.Applicative ((<$>), (<*>))
 
@@ -16,7 +17,7 @@ import Control.Applicative ((<$>), (<*>))
 -- for me, it's an int32.
 newtype AttrT = AttrT 
   { unAttrT :: #{type attr_t} }
-  deriving (Eq, Show, Storable)
+  deriving (Eq, Show, Storable, Num, Bits)
 
 -- | Wraps ncurses' cchar_t.
 data Cchar_t = Cchar_t
@@ -68,3 +69,27 @@ c_beg_y =  #{peek struct _win_st, _begy}
 -- | Read the begx field of a window.
 c_beg_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_beg_x =  #{peek struct _win_st, _begx}
+
+-- | Higher-level interface for attributes.
+data Attribute
+  = Normal | Standout | Underline | Reverse | Blink
+  | Dim    | Bold     | Invisible | Protect | Alt
+  deriving (Eq, Ord, Show, Enum)
+
+-- | Turn a single attribute into an AttrT.
+toAttrT :: Attribute -> AttrT
+toAttrT a = AttrT $ case a of
+  Normal    -> #{const A_NORMAL}
+  Standout  -> #{const A_STANDOUT}
+  Underline -> #{const A_UNDERLINE}
+  Reverse   -> #{const A_REVERSE}
+  Blink     -> #{const A_BLINK}
+  Dim       -> #{const A_DIM}
+  Bold      -> #{const A_BOLD}
+  Protect   -> #{const A_PROTECT}
+  Invisible -> #{const A_INVIS}
+  Alt       -> #{const A_ALTCHARSET}
+
+-- | Turn a group of attributes into an AttrT.
+combine :: [Attribute] -> AttrT
+combine = foldr (\a b -> b .|. toAttrT a) 0
