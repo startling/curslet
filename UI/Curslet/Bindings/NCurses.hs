@@ -87,6 +87,7 @@ box (Window w) = c_box w `on` castCharToCChar
 foreign import ccall "ncurses.h wnoutrefresh"
   c_wnoutrefresh :: WindowPtr -> IO CInt
 
+wnoutrefresh :: Window -> IO CInt
 wnoutrefresh = c_wnoutrefresh . ptr
 
 foreign import ccall "ncurses.h doupdate"
@@ -101,12 +102,6 @@ fromChar a c = Cchar_t a [fromIntegral . ord $ c]
 wadd_wch :: AttrT -> Char -> WindowPtr -> IO CInt
 wadd_wch a c w = alloca $ \p -> poke p (fromChar a c)
   >> c_wadd_wch w p
-
-foreign import ccall "ncurses.h attron"
-  c_attron :: CInt -> IO CInt
-
-foreign import ccall "ncurses.h attroff"
-  c_attroff :: CInt -> IO CInt
 
 -- TODO: higher-level key interface
 foreign import ccall "ncurses.h wget_wch"
