@@ -104,14 +104,8 @@ wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
 foreign import ccall "ncurses.h attron"
   c_attron :: CInt -> IO CInt
 
-attron :: Attribute -> IO CInt
-attron = c_attron . fromAttribute
-
 foreign import ccall "ncurses.h attroff"
   c_attroff :: CInt -> IO CInt
-
-attroff :: Attribute -> IO CInt
-attroff = c_attroff . fromAttribute
 
 -- TODO: higher-level key interface
 foreign import ccall "ncurses.h wget_wch"
