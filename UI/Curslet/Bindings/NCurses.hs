@@ -78,6 +78,24 @@ foreign import ccall "ncurses.h wmove"
 wmove :: (Integral a) => Window -> (a, a) -> IO CInt
 wmove w (r, c) = c_wmove (ptr w) (fromIntegral r) (fromIntegral c)
 
+foreign import ccall "ncurses.h start_color"
+  c_start_color :: IO CInt
+
+foreign import ccall "ncurses.h COLOR_PAIR"
+  c_color_pair :: CInt -> IO CInt
+
+foreign import ccall "ncurses.h &COLORS"
+  c_COLORS :: Ptr CInt
+
+colors :: IO CInt
+colors = peek c_COLORS
+
+foreign import ccall "ncurses.h &COLOR_PAIRS"
+  c_COLOR_PAIRS :: Ptr CInt
+
+colorPairs :: IO CInt
+colorPairs = peek c_COLOR_PAIRS
+
 foreign import ccall "ncurses.h box"
   c_box :: WindowPtr -> CChar -> CChar -> IO CInt
 
