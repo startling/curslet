@@ -92,9 +92,9 @@ fromAttribute a = case a of
 
 
 -- | Add some attributes to some Bits.
-addAttribute :: Bits b => b -> [Attribute] -> b
-addAttribute = foldr (\a b -> b .|. fromAttribute a)
+addAttributes :: Bits b => b -> [Attribute] -> b
+addAttributes = foldr (\a b -> b .|. fromAttribute a)
 
 -- | Turn a group of attributes into some Bits.
 combine :: Bits b => [Attribute] -> b
-combine = addAttribute 0
+combine = addAttributes 0
