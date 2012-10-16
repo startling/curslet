@@ -67,6 +67,8 @@ runCurslet :: Curslet n -> IO n
 runCurslet c = do
   -- Get the screen.
   s <- initscr
+  -- Turn on colors.
+  c_start_color
   -- Turn on raw mode, don't echo.
   c_raw >> c_noecho
   -- Set keypad on it.
