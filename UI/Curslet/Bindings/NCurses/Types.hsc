@@ -76,9 +76,9 @@ data Attribute
   | Dim    | Bold     | Invisible | Protect | Alt
   deriving (Eq, Ord, Show, Enum)
 
--- | Turn a single attribute into an AttrT.
-toAttrT :: Attribute -> AttrT
-toAttrT a = AttrT $ case a of
+-- | Turn a single attribute into some Num.
+fromAttribute :: Num a => Attribute -> a
+fromAttribute a = case a of
   Normal    -> #{const A_NORMAL}
   Standout  -> #{const A_STANDOUT}
   Underline -> #{const A_UNDERLINE}
@@ -90,6 +90,6 @@ toAttrT a = AttrT $ case a of
   Invisible -> #{const A_INVIS}
   Alt       -> #{const A_ALTCHARSET}
 
--- | Turn a group of attributes into an AttrT.
-combine :: [Attribute] -> AttrT
-combine = foldr (\a b -> b .|. toAttrT a) 0
+-- | Turn a group of attributes into some Bits.
+combine :: Bits b => [Attribute] -> b
+combine = foldr (\a b -> b .|. fromAttribute a) 0
