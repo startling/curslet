@@ -1,6 +1,22 @@
 {-# Language MultiParamTypeClasses #-}
 {-# Language FlexibleInstances #-}
-module UI.Curslet.Monad where
+module UI.Curslet.Monad
+  ( Internals
+  , screen
+  , Curslet
+  , runCurslet
+  , refresh
+  , window
+  , inside
+  , delete
+  , position
+  , size
+  , move
+  , border
+  , getch
+  , addch
+  , put
+  , spawn ) where
 -- base:
 import Control.Monad (ap)
 import Control.Applicative ((<$>), Applicative(..))
