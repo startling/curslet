@@ -16,7 +16,9 @@ module UI.Curslet.Monad
   , getch
   , addch
   , put
-  , spawn ) where
+  , spawn
+  , Attribute(..)
+  , withAttrs ) where
 -- base:
 import Control.Monad (ap)
 import Control.Applicative ((<$>), Applicative(..))
@@ -24,10 +26,13 @@ import Control.Applicative ((<$>), Applicative(..))
 import Control.Monad.Reader (MonadReader(..))
 -- curslet:
 import UI.Curslet.Bindings.NCurses
+import UI.Curslet.Bindings.NCurses.Types (Attribute(..),
+  addAttributes, AttrT(..))
 
 -- | The immutable state each 'Curslet' can query.
 data Internals = Internals
-  { screen :: Window }
+  { screen :: Window
+  , attribute :: AttrT }
 
 -- | A little reader-ish wrapper around IO.
 newtype Curslet m = Curslet 
@@ -65,7 +70,7 @@ runCurslet c = do
   c_raw >> c_noecho
   -- Set keypad on it.
   keypad s
-  r <- io c (Internals s)
+  r <- io c (Internals s 0)
   -- End the windows, turn on echo and noraw.
   c_echo >> c_noraw >> c_endwin
   return r
@@ -121,7 +126,8 @@ getch = either (const Nothing) (Just) <$> curslet wget_wch
 
 -- | Put a character at the cursor position.
 addch :: Char -> Curslet ()
-addch c = curslet_ (wadd_wch c . ptr) >> change
+addch c = flip (>>) change .
+   Curslet $ \i -> wadd_wch (attribute i) c (ptr . screen $ i)
 
 -- | Put a string at the cursor position.
 put :: String -> Curslet ()
@@ -137,6 +143,11 @@ spawn n b a = do
   r <- inside w a
   delete w
   return r
+
+-- | Run some Curslet with some attributes set.
+withAttrs :: [Attribute] -> Curslet m -> Curslet m
+withAttrs as = local $ \i ->
+  i { attribute = attribute i `addAttributes` as }
 
 -- TODO: getch keys
 -- TODO: colors and attributes (stick colors in Internals)
