@@ -95,11 +95,12 @@ foreign import ccall "ncurses.h doupdate"
 foreign import ccall "ncurses.h wadd_wch"
   c_wadd_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
-fromChar :: Char -> Cchar_t
-fromChar c = Cchar_t (AttrT 0) [fromIntegral . ord $ c]
+fromChar :: AttrT -> Char -> Cchar_t
+fromChar a c = Cchar_t a [fromIntegral . ord $ c]
 
-wadd_wch :: Char -> WindowPtr -> IO CInt
-wadd_wch c w = alloca $ \p -> poke p (fromChar c) >> c_wadd_wch w p
+wadd_wch :: AttrT -> Char -> WindowPtr -> IO CInt
+wadd_wch a c w = alloca $ \p -> poke p (fromChar a c)
+  >> c_wadd_wch w p
 
 foreign import ccall "ncurses.h attron"
   c_attron :: CInt -> IO CInt
