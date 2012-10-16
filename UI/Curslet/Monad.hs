@@ -5,6 +5,7 @@ module UI.Curslet.Monad
   , screen
   , Curslet
   , runCurslet
+  , change
   , refresh
   , window
   , inside
@@ -21,7 +22,7 @@ module UI.Curslet.Monad
   , withAttrs ) where
 -- base:
 import Control.Monad (ap)
-import Control.Applicative ((<$>), Applicative(..))
+import Control.Applicative ((<$>), Applicative(..), (<*))
 -- mtl
 import Control.Monad.Reader (MonadReader(..))
 -- curslet:
@@ -79,9 +80,9 @@ runCurslet c = do
 change :: Curslet ()
 change = curslet_ wnoutrefresh
 
--- | Redraw all the modified windows.
-refresh :: Curslet ()
-refresh = curslet_ (const c_doupdate)
+-- | Redraw all the modified windows after some Curslet.
+refresh :: Curslet a -> Curslet a
+refresh = flip (<*) . curslet_ . const $ c_doupdate
 
 -- | Get a new window.
 window
