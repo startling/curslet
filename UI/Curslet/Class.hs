@@ -3,7 +3,10 @@ module UI.Curslet.Class where
 import Control.Monad
 import Control.Applicative 
 
-type Coords = (Integer, Integer)
+-- | Some attributes that every Curslet should be able to implement.
+data Attribute = Bold | Blink | Reverse | Underline
+  deriving (Eq, Ord, Show)
+-- TODO: colors
 
 class (Applicative m, Monad m) => Curslet m where
   -- | Redraw all the windows that have been changed.
@@ -23,6 +26,8 @@ class (Applicative m, Monad m) => Curslet m where
   getch    :: m (Maybe Char)
   -- | Print a character.
   addch    :: Char -> m ()
+  -- | Do some action with some attributes switched on.
+  attrs    :: [Attribute] -> m a -> m a
 
 put :: Curslet m => [Char] -> m ()
 put = mapM_ addch
