@@ -1,5 +1,7 @@
 {-# Language MultiParamTypeClasses #-}
-module UI.Curslet.Ncurses where
+module UI.Curslet.Ncurses
+  ( Ncurses
+  , runNcurses ) where
 -- base:
 import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad (ap)
