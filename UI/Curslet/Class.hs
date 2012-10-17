@@ -1,4 +1,5 @@
 {-# Language MultiParamTypeClasses #-}
+{-# Language FunctionalDependencies #-}
 module UI.Curslet.Class where
 import Control.Monad
 import Control.Applicative 
@@ -8,7 +9,7 @@ data Attribute = Bold | Blink | Reverse | Underline
   deriving (Eq, Ord, Show)
 -- TODO: colors
 
-class (Applicative m, Monad m) => Curslet m where
+class (Applicative m, Monad m) => Curslet m w | m -> w where
   -- | Redraw all the windows that have been changed.
   refresh  :: m a -> m a
   -- | Create a window, given its height and width and 
@@ -29,10 +30,10 @@ class (Applicative m, Monad m) => Curslet m where
   -- | Do some action with some attributes switched on.
   attrs    :: [Attribute] -> m a -> m a
 
-put :: Curslet m => [Char] -> m ()
+put :: Curslet m w => [Char] -> m ()
 put = mapM_ addch
 
-spawn :: Curslet m
+spawn :: Curslet m w
   => (Integer, Integer)
   -> (Integer, Integer) 
   -> m b 
