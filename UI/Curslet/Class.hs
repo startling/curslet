@@ -42,6 +42,10 @@ spawn s p a = do
   w <- window s p
   a <* delete w
 
+-- | Go to the beginning of the next line.
+newline :: Curslet m w => m ()
+newline = position >>= move . flip (,) 0 . (+) 1 . fst
+
 -- TODO: borders?
 -- TODO: key interface for getch
 -- TODO: colors
