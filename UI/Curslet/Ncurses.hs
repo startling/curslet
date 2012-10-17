@@ -53,3 +53,21 @@ instance Curslet Ncurses Window where
     $ \i -> wadd_wch (attribute i) c (ptr . screen $ i)
   attrs as = local $ \i -> let a = attribute i in
     i { attribute = addAttributes a as }
+
+-- Run an Ncurses in IO.
+runNcurses :: Ncurses a -> IO a
+runNcurses c = do
+  -- Intialize things, get the main screen.
+  s <- initscr
+  -- Turn on colors, raw mode, and noecho.
+  c_start_color >> c_raw >> c_noecho
+  -- Set keypad on the main screen.
+  keypad s
+  -- Run the action.
+  r <- io c (Internals s 0)
+  -- End the windows, turn on echo and noraw.
+  c_echo >> c_noraw >> c_endwin
+  -- Return the result of the Ncurses.
+  return r
+
+  
