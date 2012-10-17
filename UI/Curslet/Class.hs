@@ -41,3 +41,7 @@ spawn :: Curslet m w
 spawn s p a = do
   w <- window s p
   a <* delete w
+
+-- TODO: borders?
+-- TODO: key interface for getch
+-- TODO: colors
