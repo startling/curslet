@@ -1,3 +1,3 @@
 *.hi
 *.o
-UI/Curslet/Bindings/NCurses/Types.hs
+UI/Curslet/NCurses/Types.hs

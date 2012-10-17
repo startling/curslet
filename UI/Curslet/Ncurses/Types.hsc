@@ -5,7 +5,7 @@
 -- http://www.haskell.org/haskellwiki/FFICookBook#Working_with_structs
 #let alignment t = "%lu", (unsigned long)offsetof(struct {char x__; t (y__); }, y__)
 #include <ncurses.h>
-module UI.Curslet.Bindings.NCurses.Types where
+module UI.Curslet.Ncurses.Types where
 -- base:
 import Foreign
 import Foreign.C.Types

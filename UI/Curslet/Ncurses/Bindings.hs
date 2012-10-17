@@ -1,5 +1,5 @@
 {-# Language ForeignFunctionInterface #-}
-module UI.Curslet.Bindings.NCurses where
+module UI.Curslet.Ncurses.Bindings where
 -- base:
 import Data.Char (ord, chr)
 import Data.Function (on)
@@ -7,7 +7,7 @@ import Foreign (Ptr, alloca, peek, poke)
 import Foreign.C.Types (CInt(..), CChar(..), CWchar)
 import Foreign.C.String (castCharToCChar)
 -- curslet:
-import UI.Curslet.Bindings.NCurses.Types
+import UI.Curslet.Ncurses.Types
 
 -- | Windows just wrap a WindowPtr.
 newtype Window = Window
