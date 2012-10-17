@@ -12,6 +12,8 @@ import Foreign.C.Types
 import Data.Bits ((.|.))
 import Data.Int (Int16)
 import Control.Applicative ((<$>), (<*>))
+-- curslet:
+import UI.Curslet.Class (Attribute(..))
 
 -- | A wrapper type for ncurses' attr_t. Probably a numeric type;
 -- for me, it's an int32.
@@ -70,24 +72,13 @@ c_beg_y =  #{peek struct _win_st, _begy}
 c_beg_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_beg_x =  #{peek struct _win_st, _begx}
 
--- | Higher-level interface for attributes.
-data Attribute
-  = Standout | Underline | Reverse | Blink | Dim
-  | Bold     | Invisible | Protect | Alt
-  deriving (Eq, Ord, Show, Enum)
-
 -- | Turn a single attribute into some Num.
 fromAttribute :: Num a => Attribute -> a
 fromAttribute a = case a of
-  Standout  -> #{const A_STANDOUT}
   Underline -> #{const A_UNDERLINE}
   Reverse   -> #{const A_REVERSE}
   Blink     -> #{const A_BLINK}
-  Dim       -> #{const A_DIM}
   Bold      -> #{const A_BOLD}
-  Protect   -> #{const A_PROTECT}
-  Invisible -> #{const A_INVIS}
-  Alt       -> #{const A_ALTCHARSET}
 
 
 -- | Add some attributes to some Bits.
