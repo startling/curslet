@@ -72,5 +72,3 @@ runNcurses c = do
   c_echo >> c_noraw >> c_endwin
   -- Return the result of the Ncurses.
   return r
-
-  
