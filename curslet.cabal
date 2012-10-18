@@ -13,4 +13,6 @@ Library
       UI.Curslet.Class
     , UI.Curslet.Ncurses.Types
     , UI.Curslet.Ncurses.Bindings
-  build-depends: base
+  build-depends:
+      base
+    , mtl
