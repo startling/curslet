@@ -22,6 +22,8 @@ class (Applicative m, Monad m) => Curslet m w | m -> w where
   delete   :: w -> m ()
   -- | Get the current y/x position of the cursor.
   position :: m (Integer, Integer)
+  -- | Get the maximum y/x position of the cursor.
+  max      :: m (Integer, Integer)
   -- | Move the cursor.
   move     :: (Integer, Integer) -> m ()
   -- | Get a character or keypress.

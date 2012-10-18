@@ -47,6 +47,7 @@ instance Curslet Ncurses Window where
   inside w = local $ \x -> x { screen = w }
   delete w = Ncurses . const . delwin $ w
   position = Ncurses $ getyx . screen
+  max = Ncurses $ getmaxyx . screen
   -- TODO: mark the window as changed after move?
   move a = Ncurses (flip wmove a . screen) >> return ()
   getch = either (const Nothing) Just
