@@ -1,4 +1,5 @@
 {-# Language GeneralizedNewtypeDeriving #-}
+{-# Language EmptyDataDecls #-}
 #define NCURSES_OPAQUE (0)
 #define _XOPEN_SOURCE_EXTENDED
 -- alignment operation, stolen from:
