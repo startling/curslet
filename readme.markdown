@@ -14,13 +14,13 @@ another backend or two in the future.
 Here's what the api looks like:
 
 ````haskell
-import UI.Curslet (Curslet(..), Attribute(..))
-import UI.Curslet.Ncurses (runNcurses)
+import UI.Curslet (Curslet(..), Attribute(..), put)
+import UI.Curslet.Ncurses (runNcurses, Ncurses(..))
 
 main = runNcurses $ do
   refresh $ do
-    attrs [Bold] $ print "hello, world"
-	attrs [Blink] $ addch '!'
+    attrs [Bold] $ put "hello, world"
+    attrs [Blink] $ addch '!'
   getch
 
 ````
