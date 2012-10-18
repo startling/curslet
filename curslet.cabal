@@ -7,3 +7,4 @@ Cabal-Version: >= 1.2
 Build-Type: Simple
 Library
   exposed-modules: UI.Curslet, UI.Curslet.Ncurses
+  build-depends: base
