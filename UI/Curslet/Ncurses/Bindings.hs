@@ -111,6 +111,12 @@ wnoutrefresh = c_wnoutrefresh . ptr
 foreign import ccall "ncurses.h doupdate"
   c_doupdate :: IO CInt
 
+foreign import ccall "ncurses.h clearok"
+  c_clearok :: WindowPtr -> CInt -> IO CInt
+
+clearok :: Window -> IO ()
+clearok (Window w) = c_clearok w 1 >> return ()
+
 foreign import ccall "ncurses.h wadd_wch"
   c_wadd_wch :: WindowPtr -> Ptr Cchar_t -> IO CInt
 
