@@ -13,6 +13,9 @@ class (Applicative m, Monad m) => Curslet m w | m -> w where
   -- | Redraw all the windows that have been changed after
   -- executing some action.
   refresh  :: m a -> m a
+  -- | Mark the screen to be cleared at the next refresh
+  -- before some action.
+  clear    :: m a -> m a
   -- | Create a window, given its height and width and 
   -- y and x positions.
   window   :: (Integer, Integer) -> (Integer, Integer) -> m w
