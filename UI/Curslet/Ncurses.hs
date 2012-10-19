@@ -42,7 +42,7 @@ change = Ncurses (wnoutrefresh . screen) >> return ()
 
 instance Curslet Ncurses Window where
   refresh = flip (<*) . Ncurses . const $ c_doupdate
-  clear = (>>) $ Ncurses (clearok . screen)
+  clear = (>>) $ Ncurses (c_werase . ptr . screen)
   window a b = Ncurses . const $
     newwin a b >>= \w -> keypad w >> return w
   inside w = local $ \x -> x { screen = w }
