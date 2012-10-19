@@ -54,6 +54,10 @@ spawn s p a = do
 newline :: Curslet m w => m ()
 newline = position >>= move . flip (,) 0 . (+) 1 . fst
 
+-- | Clear the screen, execute some action, and refresh.
+frame :: Curslet m w => m a -> m a
+frame = refresh . clear
+
 -- TODO: borders?
 -- TODO: key interface for getch
 -- TODO: colors
