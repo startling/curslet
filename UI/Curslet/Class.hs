@@ -36,9 +36,11 @@ class (Applicative m, Monad m) => Curslet m w | m -> w where
   -- | Do some action with some attributes switched on.
   attrs    :: [Attribute] -> m a -> m a
 
+-- | Add a string to the screen.
 put :: Curslet m w => [Char] -> m ()
 put = mapM_ addch
 
+-- | Run some action inside a child window; delete it afterwards.
 spawn :: Curslet m w
   => (Integer, Integer)
   -> (Integer, Integer) 
