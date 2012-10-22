@@ -1,6 +1,8 @@
 {-# Language MultiParamTypeClasses #-}
 {-# Language FunctionalDependencies #-}
 module UI.Curslet.Class where
+-- base:
+import Prelude hiding (reverse)
 import Control.Monad
 import Control.Applicative 
 
@@ -59,6 +61,11 @@ class Styled s where
   blink :: s
   reverse :: s
   underline :: s
+
+-- | Synonym for 'reverse' so we don't need to hide the 'reverse'
+-- from Prelude everywhere.
+reverse_ :: Styled s => s
+reverse_ = reverse
 
 -- TODO: borders?
 -- TODO: key interface for getch
