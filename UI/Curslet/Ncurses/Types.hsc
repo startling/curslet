@@ -13,8 +13,6 @@ import Foreign.C.Types
 import Data.Bits ((.|.))
 import Data.Int (Int16)
 import Control.Applicative ((<$>), (<*>))
--- curslet:
-import UI.Curslet.Class (Attribute(..))
 
 -- | A wrapper type for ncurses' attr_t. Probably a numeric type;
 -- for me, it's an int32.
@@ -73,19 +71,25 @@ c_beg_y =  #{peek struct _win_st, _begy}
 c_beg_x :: WindowPtr -> IO #{type NCURSES_SIZE_T}
 c_beg_x =  #{peek struct _win_st, _begx}
 
--- | Turn a single attribute into some Num.
-fromAttribute :: Num a => Attribute -> a
-fromAttribute a = case a of
-  Underline -> #{const A_UNDERLINE}
-  Reverse   -> #{const A_REVERSE}
-  Blink     -> #{const A_BLINK}
-  Bold      -> #{const A_BOLD}
+-- | Lots of things look like attributes.
+class Attribute a where
+  fromAttribute :: Num n => a -> n
 
+-- | Characters can be styled.
+data Style = Bold | Blink | Reverse | Underline
+  deriving (Eq, Ord, Show)
+
+instance Attribute Style where
+  fromAttribute a = case a of
+    Underline -> #{const A_UNDERLINE}
+    Reverse   -> #{const A_REVERSE}
+    Blink     -> #{const A_BLINK}
+    Bold      -> #{const A_BOLD}
 
 -- | Add some attributes to some Bits.
-addAttributes :: Bits b => b -> [Attribute] -> b
+addAttributes :: (Bits b, Attribute a) => b -> [a] -> b
 addAttributes = foldr (\a b -> b .|. fromAttribute a)
 
 -- | Turn a group of attributes into some Bits.
-combine :: Bits b => [Attribute] -> b
+combine :: (Bits b, Attribute a) => [a] -> b
 combine = addAttributes 0

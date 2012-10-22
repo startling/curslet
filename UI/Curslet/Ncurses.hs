@@ -1,6 +1,8 @@
 {-# Language MultiParamTypeClasses #-}
+{-# Language FlexibleInstances #-}
 module UI.Curslet.Ncurses
   ( Ncurses
+  , Style(..)
   , runNcurses ) where
 -- base:
 import Control.Applicative (Applicative(..), (<$>))
@@ -18,29 +20,29 @@ data Internals = Internals
   , attribute :: AttrT }
 
 -- | A little reader-ish wrapper around IO.
-newtype Ncurses m = Ncurses
+newtype Ncurses a m = Ncurses
   { io :: Internals -> IO m }
 
-instance Monad Ncurses where
+instance Monad (Ncurses a) where
   return = Ncurses . const . return
   a >>= fn = Ncurses $ \i -> io a i >>= ($ i) . io . fn
 
-instance Functor Ncurses where
+instance Functor (Ncurses a) where
   fmap fn a = Ncurses . fmap (fmap fn) . io $ a 
 
-instance Applicative Ncurses where
+instance Applicative (Ncurses a) where
   pure = return
   (<*>) = ap
 
-instance MonadReader Internals Ncurses where
+instance MonadReader Internals (Ncurses a) where
   ask = Ncurses return
   local fn a = Ncurses $ \i -> io a (fn i)
 
 -- Mark a window as having been changed.
-change :: Ncurses ()
+change :: Ncurses a ()
 change = Ncurses (wnoutrefresh . screen) >> return ()
 
-instance Curslet Ncurses Window where
+instance Attribute a => Curslet (Ncurses a) Window a where
   refresh = flip (<*) . Ncurses . const $ c_doupdate
   clear = (>>) $ Ncurses (c_werase . ptr . screen)
   window a b = Ncurses . const $
@@ -59,7 +61,7 @@ instance Curslet Ncurses Window where
     i { attribute = addAttributes a as }
 
 -- Run an Ncurses in IO.
-runNcurses :: Ncurses a -> IO a
+runNcurses :: Ncurses Style a -> IO a
 runNcurses c = do
   -- Intialize things, get the main screen.
   s <- initscr
