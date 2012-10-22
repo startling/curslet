@@ -60,6 +60,12 @@ instance Attribute a => Curslet (Ncurses a) Window a where
   attrs as = local $ \i -> let a = attribute i in
     i { attribute = addAttributes a as }
 
+instance Styled Style where
+  bold = Bold
+  blink = Blink
+  reverse = Reverse
+  underline = Underline
+
 -- Run an Ncurses in IO.
 runNcurses :: Ncurses Style a -> IO a
 runNcurses c = do

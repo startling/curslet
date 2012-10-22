@@ -53,6 +53,13 @@ newline = position >>= move . flip (,) 0 . (+) 1 . fst
 frame :: Curslet m w s => m a -> m a
 frame = refresh . clear
 
+-- | A class for styling characters in a 'Curslet'. 
+class Styled s where
+  bold :: s
+  blink :: s
+  reverse :: s
+  underline :: s
+
 -- TODO: borders?
 -- TODO: key interface for getch
 -- TODO: colors
