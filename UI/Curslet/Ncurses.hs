@@ -3,7 +3,7 @@
 module UI.Curslet.Ncurses
   ( Ncurses
   , Style(..)
-  , runNcurses ) where
+  , monochrome ) where
 -- base:
 import Control.Applicative (Applicative(..), (<$>))
 import Control.Monad (ap)
@@ -66,9 +66,9 @@ instance Styled Style where
   reverse = Reverse
   underline = Underline
 
--- Run an Ncurses in IO.
-runNcurses :: Ncurses Style a -> IO a
-runNcurses c = do
+-- Run any Ncurses a in IO.
+run :: Ncurses a b -> IO b
+run c = do
   -- Intialize things, get the main screen.
   s <- initscr
   -- Turn on colors, raw mode, and noecho.
@@ -81,3 +81,7 @@ runNcurses c = do
   c_echo >> c_noraw >> c_endwin
   -- Return the result of the Ncurses.
   return r
+
+-- | Run an Ncurses without any color.
+monochrome :: Ncurses Style a -> IO a
+monochrome = run
