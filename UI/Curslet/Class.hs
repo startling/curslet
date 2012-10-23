@@ -62,6 +62,23 @@ class Styled s where
   reverse :: s
   underline :: s
 
+-- | A class for things that are colored by some type of thing.
+class Colored c a | a -> c where
+  fg :: c -> a
+  bg :: c -> a
+
+-- | A class for coloring characters in a 'Curslet' with the
+-- eight ANSI colors.
+class EightColors c where
+  black :: c
+  red :: c
+  green :: c
+  yellow :: c
+  blue :: c
+  magenta ::w c
+  cyan :: c
+  white :: c
+
 -- | Synonym for 'reverse' so we don't need to hide the 'reverse'
 -- from Prelude everywhere.
 reverse_ :: Styled s => s
