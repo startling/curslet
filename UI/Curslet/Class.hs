@@ -62,6 +62,11 @@ class Styled s where
   reverse :: s
   underline :: s
 
+-- | Synonym for 'reverse' so we don't need to hide the 'reverse'
+-- from Prelude everywhere.
+reverse_ :: Styled s => s
+reverse_ = reverse
+
 -- | A class for things that are colored by some type of thing.
 class Colored c a | a -> c where
   fg :: c -> a
@@ -78,11 +83,6 @@ class EightColors c where
   magenta ::w c
   cyan :: c
   white :: c
-
--- | Synonym for 'reverse' so we don't need to hide the 'reverse'
--- from Prelude everywhere.
-reverse_ :: Styled s => s
-reverse_ = reverse
 
 -- TODO: borders?
 -- TODO: key interface for getch
