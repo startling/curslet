@@ -58,6 +58,55 @@ newline = position >>= move . flip (,) 0 . (+) 1 . fst
 frame :: Curslet m w => m a -> m a
 frame = refresh . clear
 
+-- | Move the cursor up.
+up :: Curslet m w => m ()
+up = do
+  (y, x) <- position
+  move (y - 1, x)
+
+-- | Move the cursor down.
+down :: Curslet m w => m ()
+down = do
+  (y, x) <- position
+  move (y + 1, x)
+
+-- | Move the cursor left.
+left :: Curslet m w => m ()
+left = do
+  (y, x) <- position
+  move (y, x - 1)
+
+-- | Move the cursor right.
+right :: Curslet m w => m ()
+right = do
+  (y, x) <- position
+  move (y, x + 1)
+
+
+-- | Add a character in place.
+inPlace :: Curslet m w => Char -> m ()
+inPlace c = addch c >> left
+
+-- | Center along the y axis.
+centerY :: Curslet m w => m (Integer, Integer)
+centerY = do
+  (y, _) <- getmax
+  (_, x) <- position
+  let c = (y `div` 2, x)
+  move c >> return c
+
+-- | Center along the x axis.
+centerX :: Curslet m w => m (Integer, Integer)
+centerX = do
+  (_, x) <- getmax
+  (y, _) <- position
+  let c = (y, x `div` 2)
+  move c >> return c
+
+-- | Center the cursor on the screen
+center :: Curslet m w => m (Integer, Integer)
+center = centerX >> centerY >> position
+
 -- TODO: borders?
 -- TODO: key interface for getch
 -- TODO: colors
