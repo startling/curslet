@@ -14,3 +14,19 @@ Library
     , UI.Curslet.Ncurses.Internal.Bindings
   build-depends:
       base
+
+Flag Report
+  description: "Compile an executable that reports on your terminal."
+  default: False
+Executable curslet-report
+  main-is: bin/curslet-report.hs
+  if flag(report)
+    buildable: True
+  else
+    buildable: False
+  build-depends:
+      base
+    , mtl
+  extra-libraries:
+      ncurses
+
