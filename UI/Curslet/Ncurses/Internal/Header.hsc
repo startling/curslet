@@ -53,3 +53,11 @@ color_cyan = #{const COLOR_CYAN}
 -- A haskell synonym for COLOR_WHITE.
 color_white :: CInt
 color_white = #{const COLOR_WHITE}
+
+-- A haskell synonym for ERR.
+c_err :: CInt
+c_err = #{const ERR}
+
+-- A haskell synonym for OK.
+c_ok :: CInt
+c_ok = #{const OK}
