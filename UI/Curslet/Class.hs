@@ -56,35 +56,35 @@ frame :: Curslet m w s => m a -> m a
 frame = refresh . clear
 
 -- | Move the cursor up.
-up :: Curslet m w => m ()
+up :: Curslet m w a => m ()
 up = do
   (y, x) <- position
   move (y - 1, x)
 
 -- | Move the cursor down.
-down :: Curslet m w => m ()
+down :: Curslet m w a => m ()
 down = do
   (y, x) <- position
   move (y + 1, x)
 
 -- | Move the cursor left.
-left :: Curslet m w => m ()
+left :: Curslet m w a => m ()
 left = do
   (y, x) <- position
   move (y, x - 1)
 
 -- | Move the cursor right.
-right :: Curslet m w => m ()
+right :: Curslet m w a => m ()
 right = do
   (y, x) <- position
   move (y, x + 1)
 
 -- | Add a character in place.
-inPlace :: Curslet m w => Char -> m ()
+inPlace :: Curslet m w a => Char -> m ()
 inPlace c = addch c >> left
 
 -- | Center along the y axis.
-centerY :: Curslet m w => m (Integer, Integer)
+centerY :: Curslet m w a => m (Integer, Integer)
 centerY = do
   (y, _) <- getmax
   (_, x) <- position
@@ -92,7 +92,7 @@ centerY = do
   move c >> return c
 
 -- | Center along the x axis.
-centerX :: Curslet m w => m (Integer, Integer)
+centerX :: Curslet m w a => m (Integer, Integer)
 centerX = do
   (_, x) <- getmax
   (y, _) <- position
@@ -100,9 +100,9 @@ centerX = do
   move c >> return c
 
 -- | Center the cursor on the screen
-center :: Curslet m w => m (Integer, Integer)
+center :: Curslet m w a => m (Integer, Integer)
 center = centerX >> centerY >> position
-=======
+
 -- | A class for styling characters in a 'Curslet'. 
 class Styled s where
   bold :: s
