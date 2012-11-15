@@ -55,11 +55,18 @@ c_pair_content n = alloca $ \a -> alloca $ \b -> do
 foreign import ccall "ncurses.h start_color"
   c_start_color :: IO CInt
 
-foreign import ccall "ncurses.h COLORS"
-  c_colors :: IO CInt
+foreign import ccall "ncurses.h &COLORS"
+  c_colors_ :: Ptr CInt
 
-foreign import ccall "ncurses.h COLOR_PAIRS"
-  c_color_pairs :: IO CInt
+-- | Thin wrapper around 'c_colors_'; just peeks at the value there.
+c_colors :: IO CInt
+c_colors = peek c_colors_
+
+foreign import ccall "ncurses.h &COLOR_PAIRS"
+  c_color_pairs_ :: Ptr CInt
+
+c_color_pairs :: IO CInt
+c_color_pairs = peek c_color_pairs_
 
 foreign import ccall "ncurses.h endwin"
   c_endwin :: IO CInt
