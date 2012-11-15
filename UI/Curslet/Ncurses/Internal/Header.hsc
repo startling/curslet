@@ -61,3 +61,7 @@ c_err = #{const ERR}
 -- A haskell synonym for OK.
 c_ok :: CInt
 c_ok = #{const OK}
+
+-- A haskell synonym for KEY_CODE_YES.
+c_key_code_yes :: CInt
+c_key_code_yes = #{const KEY_CODE_YES}
