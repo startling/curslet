@@ -1,8 +1,8 @@
-import UI.Curslet (Curslet(..), Attribute(..), put)
-import UI.Curslet.Ncurses (runNcurses, Ncurses(..))
+import UI.Curslet
+import UI.Curslet.Ncurses
 
-main = runNcurses $ do
+main = monochrome $ do
   refresh $ do
-    attrs [Bold] $ put "hello, world"
-    attrs [Blink] $ addch '!'
+    attrs [bold] $ put "hello, world"
+    attrs [blink] $ addch '!'
   getch

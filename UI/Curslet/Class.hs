@@ -1,15 +1,12 @@
 {-# Language MultiParamTypeClasses #-}
 {-# Language FunctionalDependencies #-}
 module UI.Curslet.Class where
+-- base:
+import Prelude hiding (reverse)
 import Control.Monad
 import Control.Applicative 
 
--- | Some attributes that every Curslet should be able to implement.
-data Attribute = Bold | Blink | Reverse | Underline
-  deriving (Eq, Ord, Show)
--- TODO: colors
-
-class (Applicative m, Monad m) => Curslet m w | m -> w where
+class (Applicative m, Monad m) => Curslet m w s | m -> w s where
   -- | Redraw all the windows that have been changed after
   -- executing some action.
   refresh  :: m a -> m a
@@ -34,28 +31,28 @@ class (Applicative m, Monad m) => Curslet m w | m -> w where
   -- | Print a character.
   addch    :: Char -> m ()
   -- | Do some action with some attributes switched on.
-  attrs    :: [Attribute] -> m a -> m a
+  attrs    :: [s] -> m a -> m a
 
 -- | Add a string to the screen.
-put :: Curslet m w => [Char] -> m ()
+put :: Curslet m w a => [Char] -> m ()
 put = mapM_ addch
 
 -- | Run some action inside a child window; delete it afterwards.
-spawn :: Curslet m w
+spawn :: Curslet m w a
   => (Integer, Integer)
   -> (Integer, Integer) 
-  -> m b 
+  -> m b
   -> m b
 spawn s p a = do
   w <- window s p
   a <* delete w
 
 -- | Go to the beginning of the next line.
-newline :: Curslet m w => m ()
+newline :: Curslet m w a => m ()
 newline = position >>= move . flip (,) 0 . (+) 1 . fst
 
 -- | Clear the screen, execute some action, and refresh.
-frame :: Curslet m w => m a -> m a
+frame :: Curslet m w s => m a -> m a
 frame = refresh . clear
 
 -- | Move the cursor up.
@@ -82,7 +79,6 @@ right = do
   (y, x) <- position
   move (y, x + 1)
 
-
 -- | Add a character in place.
 inPlace :: Curslet m w => Char -> m ()
 inPlace c = addch c >> left
@@ -106,7 +102,35 @@ centerX = do
 -- | Center the cursor on the screen
 center :: Curslet m w => m (Integer, Integer)
 center = centerX >> centerY >> position
+=======
+-- | A class for styling characters in a 'Curslet'. 
+class Styled s where
+  bold :: s
+  blink :: s
+  reverse :: s
+  underline :: s
+
+-- | Synonym for 'reverse' so we don't need to hide the 'reverse'
+-- from Prelude everywhere.
+reverse_ :: Styled s => s
+reverse_ = reverse
+
+-- | A class for things that are colored by some type of thing.
+class Colored c a | a -> c where
+  fg :: c -> a
+  bg :: c -> a
+
+-- | A class for coloring characters in a 'Curslet' with the
+-- eight ANSI colors.
+class EightColors c where
+  black :: c
+  red :: c
+  green :: c
+  yellow :: c
+  blue :: c
+  magenta ::w c
+  cyan :: c
+  white :: c
 
 -- TODO: borders?
 -- TODO: key interface for getch
--- TODO: colors
